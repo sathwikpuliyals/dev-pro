@@ -3,18 +3,30 @@ pipeline {
 
     tools {
         maven 'maven3'
+        git 'Default' // Ensure this matches the name of the Git installation in Jenkins
     }
 
     environment {
         SCANNER_HOME = tool 'sonar'
-        NEXUS_USER = credentials('champ') // Set your Nexus username
-        NEXUS_PASSWORD = credentials('champ') // Set your Nexus password
+        NEXUS_USER = credentials('nexus-username')
+        NEXUS_PASSWORD = credentials('nexus-password')
     }
 
     stages {
         stage('Git Checkout') {
             steps {
-                git branch: 'main', credentialsId: 'git-pro', url: 'https://github.com/kranthi619/dev-pro.git'
+                script {
+                    try {
+                        checkout([$class: 'GitSCM', branches: [[name: '*/main']], 
+                                  doGenerateSubmoduleConfigurations: false, 
+                                  extensions: [], 
+                                  userRemoteConfigs: [[credentialsId: 'git-pro', url: 'https://github.com/kranthi619/dev-pro.git']]])
+                    } catch (Exception e) {
+                        echo "Error during Git checkout: ${e}"
+                        currentBuild.result = 'FAILURE'
+                        error "Git checkout failed"
+                    }
+                }
             }
         }
 
