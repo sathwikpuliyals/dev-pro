@@ -53,8 +53,8 @@ pipeline {
 
         stage('Deploy Artifacts to Nexus') {
             steps {
-                withMaven(globalMavenSettingsConfig: 'maven-settings', jdk: 'jdk17', maven: 'maven3', mavenSettingsConfig: '', traceability: true) {
-                    sh "mvn deploy -DskipTests=true"
+                withMaven(globalMavenSettingsConfig: 'settings', jdk: '', maven: 'maven3', mavenSettingsConfig: '', traceability: true) {
+                    sh "mvn deploy"
                 }
             }
         }
@@ -62,13 +62,13 @@ pipeline {
         stage('Docker Image Creation') {
             steps {
                 echo 'Building Docker image using Dockerfile'
-                sh 'docker build -t kranthi619/dev-project .'
+                sh 'docker build -t kranthi619/dev-pro2 .'
             }
         }
 
         stage('Trivy Image Scan') {
             steps {
-                sh "trivy image --format table -o trivy-image-report.html kranthi619/dev-project:latest"
+                sh "trivy image --format table -o trivy-image-report.html kranthi619/dev-pro2:latest"
             }
         }
 
