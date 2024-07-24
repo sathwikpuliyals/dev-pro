@@ -52,14 +52,19 @@ pipeline {
         }
 
         stage('Deploy Artifacts to Nexus') {
-            steps {
-                withMaven(globalMavenSettingsConfig: 'settings', maven: 'maven3', traceability: true, credentialsID: 'nexus') {
-                    sh "mvn deploy"
-                }
-            }
+    steps {
+        withMaven(
+            globalMavenSettingsConfig: 'settings', 
+            maven: 'maven3', 
+            traceability: true, 
+            credentialsId: 'nexus'
+        ) {
+            sh "mvn deploy"
+           }
         }
+    }
 
-        stage('Docker Image Creation') {
+      stage('Docker Image Creation') {
             steps {
                 echo 'Building Docker image using Dockerfile'
                 sh 'docker build -t kranthi619/dev-pro2 .'
