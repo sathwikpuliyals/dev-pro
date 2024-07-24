@@ -21,7 +21,7 @@ pipeline {
                 sh "mvn compile"
             }
         }
-      
+
         stage('Test') {
             steps {
                 sh "mvn test"
@@ -53,8 +53,8 @@ pipeline {
 
         stage('Deploy Artifacts to Nexus') {
             steps {
-                withMaven(globalMavenSettingsConfig: 'settings', maven: 'maven3', traceability: true) {
-                    sh "mvn deploy"
+                withMaven(globalMavenSettingsConfig: 'settings', maven: 'maven3', credentialsId: 'nexus', traceability: true) {
+                    sh "mvn deploy -DskipTests" // Skip tests to avoid redundant execution
                 }
             }
         }
