@@ -71,5 +71,20 @@ pipeline {
                 sh 'docker push kranthi619/dev-pro2:latest'
             }
         }
-    }
+
+        stage('deploy to k8s') {
+            steps {
+                withKubeConfig(caCertificate: '', clusterName: 'hello-cluster', contextName: '', credentialsId: 'eks-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://2B3E9DA7BD4124B19C18FBBE5498ADB9.gr7.ap-south-1.eks.amazonaws.com') {
+                     sh 'kubectl apply -f deployment-service.yml -n webapps'
+                    sleep 30
 }
+    }
+         stage('deployment verification') {
+            steps {
+                withKubeConfig(caCertificate: '', clusterName: 'hello-cluster', contextName: '', credentialsId: 'eks-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://2B3E9DA7BD4124B19C18FBBE5498ADB9.gr7.ap-south-1.eks.amazonaws.com') {
+                     sh 'kubectl get pods -n webapps'
+                     sh 'kubectl get svc -n webapps'
+}
+    }
+         }
+ 
