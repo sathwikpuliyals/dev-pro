@@ -5,7 +5,7 @@ pipeline {
         maven 'maven3'
     }
 
-   environment {
+    environment {
         SCANNER_HOME = tool 'sonar'
     }
 
@@ -22,7 +22,7 @@ pipeline {
             }
         }
       
-       stage('Compile') {
+        stage('Test') {
             steps {
                 sh "mvn test"
             }
@@ -36,11 +36,11 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv(credentialsId: 'sonar-token') {
-                     sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=sonar \
-                     -Dsonar.projectName=sonar -Dsonar.java.binaries=target '''
-                  
-                  }
+                withSonarQubeEnv('sonar-token') {
+                    sh '''$SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar.projectKey=sonar \
+                        -Dsonar.projectName=sonar \
+                        -Dsonar.java.binaries=target'''
                 }
             }
         }
@@ -53,7 +53,7 @@ pipeline {
 
         stage('Deploy Artifacts to Nexus') {
             steps {
-                withMaven(globalMavenSettingsConfig: 'settings', jdk: '', maven: 'maven3', mavenSettingsConfig: '', traceability: true) {
+                withMaven(globalMavenSettingsConfig: 'settings', maven: 'maven3', traceability: true) {
                     sh "mvn deploy"
                 }
             }
@@ -76,7 +76,7 @@ pipeline {
             steps {
                 echo 'Logging in to Docker Hub'
                 sh 'docker login -u kranthi619 -p Kranthi123#'
-                sh 'docker push kranthi619/dev-project'
+                sh 'docker push kranthi619/dev-pro2:latest'
             }
         }
     }
