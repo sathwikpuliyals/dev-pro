@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Git Checkout') {
             steps {
-                git changelog: false, credentialsId: 'git-pro', poll: false, url: 'https://github.com/kranthi619/dev-pro.git'
+                git branch: 'main', credentialsId: 'git-pro', url: 'https://github.com/kranthi619/dev-pro.git'
             }
         }
 
