@@ -3,30 +3,16 @@ pipeline {
 
     tools {
         maven 'maven3'
-        git 'Default' // Ensure this matches the name of the Git installation in Jenkins
     }
 
     environment {
         SCANNER_HOME = tool 'sonar'
-        NEXUS_USER = credentials('nexus-username')
-        NEXUS_PASSWORD = credentials('nexus-password')
     }
 
     stages {
         stage('Git Checkout') {
             steps {
-                script {
-                    try {
-                        checkout([$class: 'GitSCM', branches: [[name: '*/main']], 
-                                  doGenerateSubmoduleConfigurations: false, 
-                                  extensions: [], 
-                                  userRemoteConfigs: [[credentialsId: 'git-pro', url: 'https://github.com/kranthi619/dev-pro.git']]])
-                    } catch (Exception e) {
-                        echo "Error during Git checkout: ${e}"
-                        currentBuild.result = 'FAILURE'
-                        error "Git checkout failed"
-                    }
-                }
+                git branch: 'main', credentialsId: 'git-pro', url: 'https://github.com/kranthi619/dev-pro.git'
             }
         }
 
@@ -35,7 +21,7 @@ pipeline {
                 sh "mvn compile"
             }
         }
-      
+
         stage('Test') {
             steps {
                 sh "mvn test"
@@ -67,12 +53,8 @@ pipeline {
 
         stage('Deploy Artifacts to Nexus') {
             steps {
-                withMaven(globalMavenSettingsConfig: 'settings', maven: 'maven3', traceability: true) {
-                    sh '''
-                        mvn deploy -DskipTests \
-                        -DaltDeploymentRepository=snapshots::default::http://43.204.149.160:8081/repository/maven-snapshots/ \
-                        -Dusername=$NEXUS_USER -Dpassword=$NEXUS_PASSWORD
-                    '''
+                withMaven(globalMavenSettingsConfig: 'settings', maven: 'maven3', traceability: true, credentialsID: 'nexus') {
+                    sh "mvn deploy"
                 }
             }
         }
