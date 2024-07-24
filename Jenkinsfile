@@ -56,8 +56,7 @@ pipeline {
                 withMaven(
                     globalMavenSettingsConfig: 'settings', 
                     maven: 'maven3', 
-                    traceability: true, 
-                    credentialsId: 'nexus'
+                    traceability: true
                 ) {
                     sh "mvn deploy"
                 }
