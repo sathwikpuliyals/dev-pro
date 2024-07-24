@@ -7,6 +7,8 @@ pipeline {
 
     environment {
         SCANNER_HOME = tool 'sonar'
+        NEXUS_USER = credentials('champ') // Set your Nexus username
+        NEXUS_PASSWORD = credentials('champ') // Set your Nexus password
     }
 
     stages {
@@ -21,7 +23,7 @@ pipeline {
                 sh "mvn compile"
             }
         }
-
+      
         stage('Test') {
             steps {
                 sh "mvn test"
@@ -53,8 +55,12 @@ pipeline {
 
         stage('Deploy Artifacts to Nexus') {
             steps {
-                withMaven(globalMavenSettingsConfig: 'settings', maven: 'maven3', credentialsId: 'nexus', traceability: true) {
-                    sh "mvn deploy -DskipTests" // Skip tests to avoid redundant execution
+                withMaven(globalMavenSettingsConfig: 'settings', maven: 'maven3', traceability: true) {
+                    sh '''
+                        mvn deploy -DskipTests \
+                        -DaltDeploymentRepository=snapshots::default::http://43.204.149.160:8081/repository/maven-snapshots/ \
+                        -Dusername=$NEXUS_USER -Dpassword=$NEXUS_PASSWORD
+                    '''
                 }
             }
         }
