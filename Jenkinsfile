@@ -51,18 +51,6 @@ pipeline {
             }
         }
 
-        stage('Deploy Artifacts to Nexus') {
-            steps {
-                withMaven(
-                    globalMavenSettingsConfig: 'settings', 
-                    maven: 'maven3', 
-                    traceability: true
-                ) {
-                    sh "mvn deploy"
-                }
-            }
-        }
-
         stage('Docker Image Creation') {
             steps {
                 echo 'Building Docker image using Dockerfile'
