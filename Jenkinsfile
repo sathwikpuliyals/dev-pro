@@ -74,14 +74,14 @@ pipeline {
 
         stage('deploy to k8s') {
             steps {
-                withKubeConfig(caCertificate: '', clusterName: 'hello-cluster', contextName: '', credentialsId: 'eks-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://2B3E9DA7BD4124B19C18FBBE5498ADB9.gr7.ap-south-1.eks.amazonaws.com') {
+                withKubeConfig(caCertificate: '', clusterName: 'my-cluster', contextName: '', credentialsId: 'eks-secret', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://34CD5432CEBE5B832A4641690A08F557.gr7.ap-south-1.eks.amazonaws.com') {
                      sh 'kubectl apply -f deployment-service.yml -n webapps'
                     sleep 30
 }
     }
          stage('deployment verification') {
             steps {
-                withKubeConfig(caCertificate: '', clusterName: 'hello-cluster', contextName: '', credentialsId: 'eks-token', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://2B3E9DA7BD4124B19C18FBBE5498ADB9.gr7.ap-south-1.eks.amazonaws.com') {
+                withKubeConfig(caCertificate: '', clusterName: 'my-cluster', contextName: '', credentialsId: 'eks-secret', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://34CD5432CEBE5B832A4641690A08F557.gr7.ap-south-1.eks.amazonaws.com') {
                      sh 'kubectl get pods -n webapps'
                      sh 'kubectl get svc -n webapps'
 }
